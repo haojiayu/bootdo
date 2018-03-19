@@ -52,6 +52,17 @@ public class ContentDO implements Serializable {
 	//修改时间
 	private Date gtmModified;
 
+
+	public Long getResource_type_id() {
+		return resource_type_id;
+	}
+
+	public void setResource_type_id(Long resource_type_id) {
+		this.resource_type_id = resource_type_id;
+	}
+
+	private Long resource_type_id;
+
 	/**
 	 * 设置：
 	 */

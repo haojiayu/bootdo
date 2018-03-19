@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.bootdo.common.utils.ShiroUtils.getUserId;
+
 /**
  * @author bootdo 1992lcg@163.com
  */
@@ -31,6 +33,7 @@ public class BlogController {
 	@ResponseBody
 	@GetMapping("/open/list")
 	public PageUtils opentList(@RequestParam Map<String, Object> params) {
+		//params.put("id",getUserId());
 		Query query = new Query(params);
 		List<ContentDO> bContentList = bContentService.list(query);
 		int total = bContentService.count(query);

@@ -1,3 +1,6 @@
+$(function() {
+    selectLoad();
+})
 $().ready(function() {
 
 	$('.summernote').summernote({
@@ -10,6 +13,7 @@ $().ready(function() {
         }
 	});
 	validateRule();
+
 });
 
 
@@ -19,6 +23,7 @@ $.validator.setDefaults({
 	}
 });
 function save(status) {
+	debugger;
 	$("#status").val(status);
 	var content_sn = $("#content_sn").summernote('code');
 	$("#content").val(content_sn);
@@ -57,6 +62,36 @@ function validateRule() {
 			content : "请填写文章内容"
 		}
 	});
+}
+
+function selectLoad() {
+
+    var html = "";
+    $.ajax({
+        url : '/system/resourceType/list',
+        success : function(data) {
+            var list = data.rows;
+            //加载数据
+            for (var i = 0; i < list.length; i++) {
+                html += '<option value="' + list[i].id + '">' + list[i].resourceTypeName + '</option>'
+            }
+            debugger;
+            $(".chosen-select").append(html);
+            $(".chosen-select").chosen({
+                maxHeight : 200
+            });
+			//点击事件
+            $('.chosen-select').on('change', function(e, params) {
+                console.log(params.selected);
+                var opt = {
+                    query : {
+                        type : params.selected,
+                    }
+                }
+                $('#exampleTable').bootstrapTable('refresh', opt);
+            });
+        }
+    });
 }
 
 function returnList() {

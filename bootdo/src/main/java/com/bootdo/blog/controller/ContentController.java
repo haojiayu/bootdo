@@ -7,6 +7,8 @@ import com.bootdo.common.controller.BaseController;
 import com.bootdo.common.utils.PageUtils;
 import com.bootdo.common.utils.Query;
 import com.bootdo.common.utils.R;
+import com.bootdo.system.domain.ResourceTypeDO;
+import com.bootdo.system.service.ResourceTypeService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -14,8 +16,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.bootdo.common.utils.ShiroUtils.getUserId;
 
 /**
  * 文章内容
@@ -29,6 +34,8 @@ import java.util.Map;
 public class ContentController extends BaseController {
 	@Autowired
     ContentService bContentService;
+	@Autowired
+	ResourceTypeService resourceTypeService;
 
 	@GetMapping()
 	@RequiresPermissions("blog:bContent:bContent")
@@ -40,6 +47,7 @@ public class ContentController extends BaseController {
 	@GetMapping("/list")
 	@RequiresPermissions("blog:bContent:bContent")
 	public PageUtils list(@RequestParam Map<String, Object> params) {
+		params.put("id",getUserId());
 		Query query = new Query(params);
 		List<ContentDO> bContentList = bContentService.list(query);
 		int total = bContentService.count(query);
@@ -57,7 +65,19 @@ public class ContentController extends BaseController {
 	@RequiresPermissions("blog:bContent:edit")
 	String edit(@PathVariable("cid") Long cid, Model model) {
 		ContentDO bContentDO = bContentService.get(cid);
+		Map map = new HashMap();
+		//查询列表数据
+		Query query = new Query(map);
+		List<ResourceTypeDO> resourceTypeList = resourceTypeService.list(query);
+
+		for (ResourceTypeDO resourceTypeDO :resourceTypeList){
+			if(resourceTypeDO.getId().equals(bContentDO.getResource_type_id())){
+				resourceTypeDO.setRemark("checked");
+				break;
+			}
+		}
 		model.addAttribute("bContent", bContentDO);
+		model.addAttribute("resourceTypeList",resourceTypeList);
 		return "blog/bContent/edit";
 	}
 
